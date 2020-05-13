@@ -16,20 +16,21 @@ module.exports = function(mixinOptions) {
     const serviceSchema = {
         events: {
             "$services.changed"() {
-
+                this.prepareGrpcServices()
             }
         },
         methods: {
+
+            invalidateGraphQLSchema() {
+			    this.shouldUpdateGraphqlSchema = true
+			},
 
             prepareGrpcServices() {
                 this.logger.info("♻ Preparing gRPC services")
 
                 try {
-
                     const services = this.broker.registry.getServiceList({ withActions: true })
-
                     this.addGrpcServices(services)
-
                 } catch (err) {
                     this.logger.error(err)
                     throw new Error(err)
@@ -89,12 +90,12 @@ module.exports = function(mixinOptions) {
                                 const packageDefinition = protoLoader.loadSync(PROTO_PATH)
                                 const proto = grpc.loadPackageDefinition(packageDefinition)[service.settings.grpc.proto]
 
-                                // server.forceShutdown(() => {
-
-                                // })
-
                                 console.log(`service ${service.settings.grpc.service} added`, actions)
-                                server.addService(proto[service.settings.grpc.service].service, actions)
+                                try {
+                                    server.addService(proto[service.settings.grpc.service].service, actions)
+                                } catch (err) {
+                                    // console.log(err)
+                                }
 
                             }
 
@@ -102,17 +103,11 @@ module.exports = function(mixinOptions) {
 
                     })
 
-                    console.log('starting')
-                    server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
-                    server.start()
-                    this.logger.info(`🚀 gRPC server is available at ${mixinOptions.routeOptions.path}`)
                 } catch (err) {
                     this.logger.error(err)
                     throw new Error(err)
                 }
             },
-
-
 
 			getServiceName(service) {
 				if (service.fullName) return service.fullName;
@@ -127,14 +122,21 @@ module.exports = function(mixinOptions) {
 					);
 
 				return service.name;
-			},
+            },
+
+            startGrpcServer() {
+                server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
+                server.start()
+                this.logger.info(`🚀 gRPC server is available at ${mixinOptions.routeOptions.path}`)
+            }
         },
         created() {
             const route = _.defaultsDeep(mixinOptions.routeOptions, {
                 aliases: {
                     "/"(req, res) {
                         try {
-                            return this.prepareGrpcServices()
+                            this.startGrpcServer()
+                            return 'gRPC'
                         } catch (err) {
                             throw new Error(err)
                         }
@@ -150,18 +152,7 @@ module.exports = function(mixinOptions) {
         },
 
         started() {
-            // const PROTO_PATH = __dirname + '../../../../protos/helloworld.proto'
-            // const packageDefinition = protoLoader.loadSync(PROTO_PATH)
-            // var hello_proto = grpc.loadPackageDefinition(packageDefinition).helloworld
-
-            // function sayHello(call, callback) {
-            //     callback(null, {message: 'Hello ' + call.request.name});
-            // }
-
-
-            // server.addService(hello_proto.Greeter.service, {sayHello: sayHello});
-            // server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
-            // server.start();
+            if (process.env.NODE_ENV == "production") this.prepareGrpcServices()
             this.logger.info(`🚀 gRPC server is available at ${mixinOptions.routeOptions.path}`)
         },
     }
