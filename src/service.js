@@ -3,7 +3,6 @@
 const _ = require("lodash")
 const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
-const { MoleculerServerError } = require("moleculer").Errors
 
 module.exports = function(mixinOptions) {
     mixinOptions = _.defaultsDeep(mixinOptions, {

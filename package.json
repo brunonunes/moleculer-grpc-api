@@ -6,12 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Bruno Nunes",
+  "license": "MIT",
   "dependencies": {
     "@grpc/proto-loader": "^0.5.4",
     "grpc": "^1.24.2",
-    "lodash": "^4.17.15",
-    "moleculer": "^0.14.6"
+    "lodash": "^4.17.15"
   }
 }
