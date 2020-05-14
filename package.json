@@ -1,16 +1,26 @@
 {
   "name": "moleculer-grpc-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "gRPC server for Moleculer API Gateway",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Bruno Nunes",
+  "keywords": [
+    "grpc",
+    "moleculer",
+    "microservice",
+    "gateway"
+  ],
+  "author": "Bruno Nunes @brunonunes",
   "license": "MIT",
   "dependencies": {
     "@grpc/proto-loader": "^0.5.4",
     "grpc": "^1.24.2",
     "lodash": "^4.17.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brunonunes/moleculer-grpc-api.git"
   }
 }
