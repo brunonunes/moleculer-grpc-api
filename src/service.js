@@ -35,24 +35,29 @@ module.exports = function(mixinOptions) {
 
                         let actions = {}
 
-                        const action = aliases[protoDef]
+                        const calls = aliases[protoDef]
 
-                        const [protoFile, route] = protoDef.split('.')
-                        const [protoService, protoActionCall] = route.split('/')
+                        const [protoFile, protoService] = protoDef.split('.')
 
-                        this.logger.info(`gRPC ${protoFile}.${protoService}/${protoActionCall} => ${action}`)
+                        for (const protoActionCall of Object.keys(calls)) {
 
-                        actions[protoActionCall] = async (call, callback) => {
-                            try {
-                                const params = call.request
-                                callback (null, await this.broker.call(
-                                    action,
-                                    params
-                                ))
-                            } catch (err) {
-                                callback(null, err)
-                                throw new Error(err)
+                            const action = calls[protoActionCall]
+
+                            this.logger.info(`gRPC ${protoFile}.${protoService}/${protoActionCall} => ${action}`)
+
+                            actions[protoActionCall] = async (call, callback) => {
+                                try {
+                                    const params = call.request
+                                    callback (null, await this.broker.call(
+                                        action,
+                                        params
+                                    ))
+                                } catch (err) {
+                                    callback(null, err)
+                                    throw new Error(err)
+                                }
                             }
+
                         }
 
                         const PROTO_PATH = `${directory}/${protoFile}.proto`
