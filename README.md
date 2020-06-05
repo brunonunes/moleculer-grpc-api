@@ -39,7 +39,15 @@ module.exports = {
                 'helloworld.Greeter': {
                     'sayHello': 'greeter.sayHello'
                 }
-            }
+            },
+
+            // Authentication action to populate ctx.user using header
+            authentication: {
+                action: "user.currentUser",
+                params: {
+                    accessToken: "Authorization"
+                }
+            },
         })
     ]
 };

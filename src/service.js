@@ -19,15 +19,16 @@ module.exports = function(mixinOptions) {
                 try {
                     const aliases = mixinOptions.aliases
                     const directory = mixinOptions.directory
+                    const authentication = mixinOptions.authentication
                     this.logger.info(`♻ Preparing gRPC aliases ${directory}`)
-                    this.addGrpcServices(directory, aliases)
+                    this.addGrpcServices({ directory, aliases, authentication })
                 } catch (err) {
                     this.logger.error(err)
                     throw new Error(err)
                 }
             },
 
-            addGrpcServices(directory, aliases) {
+            addGrpcServices({ directory, aliases, authentication }) {
 
                 try {
 
@@ -48,9 +49,23 @@ module.exports = function(mixinOptions) {
                             actions[protoActionCall] = async (call, callback) => {
                                 try {
                                     const params = call.request
+                                    let metadata = call.metadata
+
+                                    if (authentication) {
+                                        const authenticationParams = authentication.params
+                                        const [tokenParam] = Object.keys(authenticationParams)
+                                        const [data] = metadata.get(authenticationParams[tokenParam])
+
+                                        let options = {}
+                                        options[tokenParam] = data
+
+                                        metadata.user = await this.broker.call(authentication.action, options)
+                                    }
+
                                     callback (null, await this.broker.call(
                                         action,
-                                        params
+                                        params,
+                                        { metadata }
                                     ))
                                 } catch (err) {
                                     callback(null, err)
