@@ -36,7 +36,9 @@ module.exports = {
 
             // List of actions available. ${protoPackage}.${protoService}/${serviceName}: ${moleculerService}.${moculerAction}
             aliases: {
-                'helloworld.Greeter/sayHello': 'greeter.sayHello'
+                'helloworld.Greeter': {
+                    'sayHello': 'greeter.sayHello'
+                }
             }
         })
     ]
