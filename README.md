@@ -15,15 +15,12 @@ This example demonstrates how to setup a Moleculer API Gateway with gRPC mixin i
 ```js
 "use strict";
 
-const ApiGateway 	= require("moleculer-web");
 const { GrpcService } = require("moleculer-grpc-api");
 
 module.exports = {
-    name: "api",
+    name: "grpc",
 
     mixins: [
-        // Gateway
-        ApiGateway,
 
         // gRPC Server
         GrpcService({
