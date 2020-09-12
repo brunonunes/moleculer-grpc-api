@@ -68,6 +68,7 @@ module.exports = function(mixinOptions) {
                                         { metadata }
                                     ))
                                 } catch (err) {
+                                    console.error(err)
                                     callback(null, err)
                                     throw new Error(err)
                                 }
