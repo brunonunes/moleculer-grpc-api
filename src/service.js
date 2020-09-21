@@ -1,6 +1,6 @@
 "use strict"
 
-const _ = require("lodash")
+const defaultsDeep = require('lodash.defaultsdeep')
 const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
 
@@ -8,7 +8,7 @@ const { createError } = require("./utils")
 
 module.exports = function(mixinOptions) {
 
-    mixinOptions = _.defaultsDeep(mixinOptions, {
+    mixinOptions = defaultsDeep(mixinOptions, {
         port: 50051
     })
 
