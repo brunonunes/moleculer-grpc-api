@@ -4,6 +4,8 @@ const _ = require("lodash")
 const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
 
+const { createError } = require("./utils")
+
 module.exports = function(mixinOptions) {
 
     mixinOptions = _.defaultsDeep(mixinOptions, {
@@ -49,28 +51,27 @@ module.exports = function(mixinOptions) {
                             actions[protoActionCall] = async (call, callback) => {
                                 try {
                                     const params = call.request
-                                    let metadata = call.metadata
+                                    let meta = call.metadata
 
                                     if (authentication) {
                                         const authenticationParams = authentication.params
                                         const [tokenParam] = Object.keys(authenticationParams)
-                                        const [data] = metadata.get(authenticationParams[tokenParam])
+                                        const [data] = meta.get(tokenParam)
 
                                         let options = {}
                                         options[tokenParam] = data
 
-                                        metadata.user = await this.broker.call(authentication.action, options)
+                                        meta.user = await this.broker.call(authentication.action, options)
                                     }
 
                                     callback (null, await this.broker.call(
                                         action,
                                         params,
-                                        { metadata }
+                                        { meta }
                                     ))
                                 } catch (err) {
-                                    console.error(err)
-                                    callback(null, err)
-                                    throw new Error(err)
+                                    this.logger.error(err)
+                                    callback(createError(err.code, err.message, err.data), null)
                                 }
                             }
 
