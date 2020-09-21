@@ -67,7 +67,7 @@ module.exports = {
 
             // Authentication action to populate ctx.user using header
             authentication: {
-                action: "user.currentUser",
+                action: "greeter.currentUser",
                 params: {
                     accessToken: "12345"
                 }
