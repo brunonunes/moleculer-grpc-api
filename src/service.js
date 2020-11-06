@@ -62,11 +62,13 @@ module.exports = function(mixinOptions) {
                                         meta.user = await this.broker.call(authentication.action, options)
                                     }
 
-                                    callback (null, await this.broker.call(
+                                    const response = await this.broker.call(
                                         action,
                                         params,
                                         { meta }
-                                    ))
+                                    )
+
+                                    callback (null, response || {})
                                 } catch (err) {
                                     console.error(err)
                                     callback(null, err)
