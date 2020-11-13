@@ -1,12 +1,14 @@
 "use strict"
 
-const _ = require("lodash")
+const defaultsDeep = require('lodash.defaultsdeep')
 const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
 
+const { createError } = require("./utils")
+
 module.exports = function(mixinOptions) {
 
-    mixinOptions = _.defaultsDeep(mixinOptions, {
+    mixinOptions = defaultsDeep(mixinOptions, {
         port: 50051
     })
 
@@ -54,7 +56,7 @@ module.exports = function(mixinOptions) {
                                     if (authentication) {
                                         const authenticationParams = authentication.params
                                         const [tokenParam] = Object.keys(authenticationParams)
-                                        const [data] = meta.get(authenticationParams[tokenParam])
+                                        const [data] = meta.get(tokenParam)
 
                                         let options = {}
                                         options[tokenParam] = data
@@ -70,9 +72,8 @@ module.exports = function(mixinOptions) {
 
                                     callback (null, response || {})
                                 } catch (err) {
-                                    console.error(err)
-                                    callback(null, err)
-                                    throw new Error(err)
+                                    this.logger.error(err)
+                                    callback(createError(err.code, err.message, err.data), null)
                                 }
                             }
 
