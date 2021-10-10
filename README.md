@@ -29,7 +29,7 @@ module.exports = {
             directory: `${dirname}/../protos`,
 
             // gRPC port. Default: 50051
-            port: ``
+            port: ``,
 
             // List of actions available. ${protoPackage}.${protoService}/${serviceName}: ${moleculerService}.${moculerAction}
             aliases: {
